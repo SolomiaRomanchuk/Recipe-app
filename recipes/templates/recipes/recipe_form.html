@@ -1,0 +1,66 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}
+    {% if object %}
+        Edit Recipe
+    {% else %}
+        Add Recipe
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <span class="section-label">
+        RECIPE BOOK
+    </span>
+
+    <h1>
+        {% if object %}
+            Edit Recipe
+        {% else %}
+            Add New Recipe
+        {% endif %}
+    </h1>
+
+    <p>
+        {% if object %}
+            Update the information about this recipe.
+        {% else %}
+            Add a new delicious recipe to your collection.
+        {% endif %}
+    </p>
+
+</section>
+
+
+<div class="recipe-form-container">
+
+    <form method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <div class="form-actions">
+
+            <button type="submit" class="primary-button">
+                {% if object %}
+                    Save Changes
+                {% else %}
+                    Create Recipe
+                {% endif %}
+            </button>
+
+            <a href="{% url 'recipe_list' %}" class="secondary-button">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

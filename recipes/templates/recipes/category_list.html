@@ -1,0 +1,74 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Categories | Recipe Book{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <span class="section-label">EXPLORE</span>
+
+    <h1>Recipe Categories</h1>
+
+    <p>
+        Browse recipes by category and find something delicious to cook.
+    </p>
+
+</section>
+
+<section class="section">
+
+    {% if categories %}
+
+    <div class="category-grid">
+
+        {% for category in categories %}
+
+        <a href="{% url 'recipe_list' %}?category={{ category.id }}" class="category-card">
+
+            <div class="category-icon">
+                {{ category.emoji }}
+            </div>
+
+            <h2>{{ category.name }}</h2>
+
+            <span class="category-arrow">
+                Explore →
+            </span>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="detail-footer">
+
+        <a
+            href="{% url 'recipe_list' %}"
+            class="secondary-button"
+        >
+            ← Back to Recipes
+        </a>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+
+        <div class="empty-icon">📂</div>
+
+        <h3>No categories yet</h3>
+
+        <p>
+            Categories will appear here when you add them.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

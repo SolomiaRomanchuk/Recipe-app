@@ -1,0 +1,48 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Create Account | Recipe Book{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <span class="section-label">
+        RECIPE BOOK
+    </span>
+
+    <h1>Create Account</h1>
+
+    <p>
+        Create an account to manage your own recipes.
+    </p>
+
+</section>
+
+<div class="recipe-form-container">
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <div class="form-actions">
+
+            <button type="submit" class="primary-button">
+                Create Account
+            </button>
+
+            <a
+                href="{% url 'login' %}"
+                class="secondary-button"
+            >
+                Login
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

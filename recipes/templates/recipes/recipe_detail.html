@@ -1,0 +1,214 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}{{ recipe.name }} | Recipe Book{% endblock %}
+
+{% block content %}
+
+<div class="back-link">
+    <a href="{% url 'recipe_list' %}">← Back to Recipes</a>
+</div>
+
+
+<article class="recipe-detail">
+
+
+<div class="detail-header">
+
+    <div>
+        <span class="section-label">RECIPE</span>
+
+        <h1>{{ recipe.name }}</h1>
+
+        {% if recipe.category %}
+            <p class="detail-category">
+                {{ recipe.category.name }}
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="detail-icon">
+        🍴
+    </div>
+
+</div>
+
+
+<div class="detail-info">
+
+    <div class="info-box">
+        <span class="info-icon">⏱</span>
+        <div>
+            <small>Cooking time</small>
+            <strong>{{ recipe.cooking_time }} min</strong>
+        </div>
+    </div>
+
+
+    <div class="info-box">
+      <span class="info-icon"></span>
+        <div>
+            <small>Difficulty</small>
+
+            <strong class="difficulty-stars">
+            {% if recipe.difficulty == 'easy' %}
+                ⭐
+            {% elif recipe.difficulty == 'medium' %}
+                ⭐⭐
+            {% elif recipe.difficulty == 'hard' %}
+                ⭐⭐⭐
+            {% endif %}
+            </strong>
+
+        </div>
+    </div>
+
+
+    {% if recipe.category %}
+
+    <div class="info-box">
+        <span class="info-icon">📂</span>
+        <div>
+            <small>Category</small>
+            <strong>{{ recipe.category.name }}</strong>
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<div class="detail-section">
+
+    <h2>Ingredients</h2>
+
+    {% if recipe.ingredients.all %}
+
+    <div class="ingredient-tags">
+
+        {% for ingredient in recipe.ingredients.all %}
+
+            <span class="ingredient-tag">
+                {{ ingredient.name }}
+            </span>
+
+        {% empty %}
+
+            <p>No ingredients added yet.</p>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="detail-section">
+
+       <h2>How to Cook</h2>
+
+       <p class="recipe-description">
+        {{ recipe.description }}
+       </p>
+
+    </div>
+
+    {% else %}
+
+        <p class="muted-text">
+            No ingredients added yet.
+        </p>
+
+    {% endif %}
+
+</div>
+
+    {% if related_recipes %}
+
+<div class="detail-section">
+
+    <h2>More Recipes From This Category</h2>
+
+    <div class="recipe-grid">
+
+        {% for related_recipe in related_recipes %}
+
+        <article class="recipe-card">
+
+            <div class="recipe-image">
+
+                {% if related_recipe.image %}
+
+                    <img
+                        src="{{ related_recipe.image.url }}"
+                        alt="{{ related_recipe.name }}"
+                    >
+
+                {% else %}
+
+                    <div class="image-placeholder">
+                        🍽️
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="recipe-card-content">
+
+                <h3>
+                    {{ related_recipe.name }}
+                </h3>
+
+                <p class="category-name">
+                    {{ related_recipe.category.name }}
+                </p>
+
+                <a
+                    href="{% url 'recipe_detail' related_recipe.pk %}"
+                    class="secondary-button"
+                >
+                    View Recipe →
+                </a>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<div class="detail-footer">
+
+    {% if user == recipe.owner or user.is_staff %}
+
+        <a
+            href="{% url 'recipe_update' recipe.pk %}"
+            class="primary-button"
+        >
+            Edit Recipe
+        </a>
+
+        <a
+            href="{% url 'recipe_delete' recipe.pk %}"
+            class="secondary-button"
+        >
+            Delete Recipe
+        </a>
+
+    {% endif %}
+
+    <a
+        href="{{ back_url }}"
+        class="secondary-button"
+    >
+        {{ back_text }}
+    </a>
+
+</div>
+
+{% endblock %}

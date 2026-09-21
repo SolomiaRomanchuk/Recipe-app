@@ -1,0 +1,61 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Ingredients | Recipe Book{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+
+<span class="section-label">FRESH & SIMPLE</span>
+
+<h1>Ingredients</h1>
+
+<p>
+    Ingredients you'll need for the recipes.
+</p>
+
+</section>
+
+<section class="section">
+
+
+{% if ingredients %}
+
+<div class="ingredient-grid">
+
+    {% for ingredient in ingredients %}
+
+    <div class="ingredient-card">
+
+        <div class="ingredient-icon">
+            {{ ingredient.emoji }}
+        </div>
+
+        <span>{{ ingredient.name }}</span>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-icon">🥕</div>
+
+    <h3>No ingredients yet</h3>
+
+    <p>
+        Ingredients will appear here when you add them.
+    </p>
+
+</div>
+
+{% endif %}
+
+</section>
+
+{% endblock %}

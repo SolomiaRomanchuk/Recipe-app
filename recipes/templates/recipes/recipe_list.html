@@ -1,0 +1,140 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Recipes | Recipe Book{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div>
+        <span class="hero-label">WELCOME TO</span>
+
+        <h1>Recipe Book</h1>
+
+        <p>
+            Discover simple, delicious and inspiring recipes
+            for every occasion.
+        </p>
+
+        <a href="#recipes" class="primary-button">
+            Explore Recipes
+        </a>
+    </div>
+
+    <div class="hero-icon">
+        🥨
+    </div>
+</section>
+
+<section id="recipes" class="section">
+
+    <div class="section-heading">
+        <div>
+            <span class="section-label">OUR COLLECTION</span>
+            <h2>{{ page_title }}</h2>
+       </div>
+
+        <a href="{% url 'recipe_create' %}" class="primary-button">
+            Add Recipe
+        </a>
+    </div>
+
+    {% if recipes %}
+
+    <div class="recipe-grid">
+
+        {% for recipe in recipes %}
+
+        <article class="recipe-card">
+
+            <div class="recipe-image">
+                {% if recipe.image %}
+                    <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}">
+                {% else %}
+                    <div class="image-placeholder">
+                        🍽️
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="recipe-card-content">
+
+                <div class="recipe-meta">
+                    <span>⏱ {{ recipe.cooking_time }} min</span>
+                    <span class="difficulty {{ recipe.difficulty }}">
+                        {{ recipe.difficulty|title }}
+                    </span>
+                </div>
+
+                <h3>{{ recipe.name }}</h3>
+
+                {% if recipe.category %}
+                    <p class="category-name">
+                        {{ recipe.category.name }}
+                    </p>
+                {% endif %}
+
+                <a
+                        href="{% url 'recipe_detail' recipe.id %}{% if selected_category %}?from=category&category={{ selected_category.id }}{% elif page_title == 'Quick Recipes' %}?from=quick{% endif %}"
+                        class="secondary-button"
+                >
+                        View Recipe →
+                </a>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% if is_paginated %}
+    <nav class="pagination">
+
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">
+                ← Previous
+            </a>
+        {% endif %}
+
+        <span>
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">
+                Next →
+            </a>
+        {% endif %}
+
+    </nav>
+    {% endif %}
+
+    {% if selected_category %}
+
+    <div class="detail-footer">
+
+        <a
+          href="{% url 'category_list' %}"
+          class="secondary-button"
+        >
+          ← Back to Categories
+        </a>
+
+   </div>
+
+{% endif %}
+
+    {% else %}
+
+    <div class="empty-state">
+        <div class="empty-icon">🍳</div>
+        <h3>No recipes yet</h3>
+        <p>Add recipes from this category, and they’ll appear here.</p>
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
