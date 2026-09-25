@@ -36,7 +36,7 @@ Users can browse recipes, organize them by categories and difficulty, save favor
 ## How to Run Locally
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/SolomiaRomanchuk/Recipe-app
 cd recipe-book
 
 python3 -m venv venv
@@ -46,7 +46,7 @@ pip install -r requirements.txt
 
 cp .env.example .env
 
-## Fill .env with your local values:
+# Fill .env with your local values:
 
 SECRET_KEY=your-secret-key
 DEBUG=True
@@ -56,7 +56,7 @@ Then run:
 python3 manage.py migrate
 python3 manage.py runserver
 
-## Open the application in your browser.
+# Open the application in your browser.
 ```
 
 ## Live Demo
