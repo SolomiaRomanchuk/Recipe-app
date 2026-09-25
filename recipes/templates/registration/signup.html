@@ -25,9 +25,18 @@
 
         {% csrf_token %}
 
+        <!-- General form errors -->
+        {% if form.non_field_errors %}
+            <div class="form-errors">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+
+        <!-- Username -->
         <div class="form-group">
 
-            <label for="{{ form.username.id_for_label }}">
+            <label for=>
                 Username
             </label>
 
@@ -48,9 +57,10 @@
         </div>
 
 
+        <!-- Password -->
         <div class="form-group">
 
-            <label for="{{ form.password1.id_for_label }}">
+            <label for=>
                 Password
             </label>
 
@@ -64,16 +74,17 @@
 
             {% if form.password1.help_text %}
                 <div class="form-help">
-                    {{ form.password1.help_text }}
+                    {{ form.password1.help_text|safe }}
                 </div>
             {% endif %}
 
         </div>
 
 
+        <!-- Confirm Password -->
         <div class="form-group">
 
-            <label for="{{ form.password2.id_for_label }}">
+            <label for>
                 Confirm Password
             </label>
 
@@ -87,20 +98,21 @@
 
             {% if form.password2.help_text %}
                 <div class="form-help">
-                    {{ form.password2.help_text }}
+                    {{ form.password2.help_text|safe }}
                 </div>
             {% endif %}
 
         </div>
 
 
+        <!-- Submit -->
         <div class="form-actions">
 
             <button
                 type="submit"
                 class="primary-button"
             >
-                Sign In
+                Create Account
             </button>
 
         </div>

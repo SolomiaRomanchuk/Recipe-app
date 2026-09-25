@@ -4,6 +4,149 @@ from django.urls import reverse
 from .models import Category, Ingredient, Recipe
 
 
+class AuthenticationTests(TestCase):
+    password = 'Saffron!River-73-Cook'
+
+    def signup_data(self, **overrides):
+        return {
+            'username': 'new-cook',
+            'password1': self.password,
+            'password2': self.password,
+            **overrides,
+        }
+
+    def test_signup_route_template_and_fields(self):
+        from django.urls import resolve
+        from .forms import SignUpForm
+        from .views import SignUpView
+
+        self.assertIs(resolve('/accounts/signup/').func.view_class, SignUpView)
+        response = self.client.get(reverse('signup'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/signup.html')
+        self.assertIsInstance(response.context['form'], SignUpForm)
+        self.assertEqual(list(response.context['form'].fields), ['username', 'password1', 'password2'])
+        for name in ['username', 'password1', 'password2']:
+            self.assertContains(response, f'name="{name}"')
+            self.assertContains(response, f'for="id_{name}"')
+        self.assertNotContains(response, 'name="email"')
+        for text in ['Username', 'Password', 'Confirm Password', 'Create Account', 'Already have an account?', 'Log In']:
+            self.assertContains(response, text)
+
+    def test_invalid_signup_shows_validation_errors(self):
+        from django.contrib.auth.models import User
+        from django.utils.html import escape
+
+        User.objects.create_user(username='existing-cook', password=self.password)
+        for data in [
+            {},
+            self.signup_data(username='invalid name!'),
+            self.signup_data(username='existing-cook'),
+            self.signup_data(password2='Different!Password-73'),
+            self.signup_data(password1='123', password2='123'),
+        ]:
+            with self.subTest(data_fields=list(data)):
+                response = self.client.post(reverse('signup'), data)
+                self.assertEqual(response.status_code, 200)
+                self.assertTrue(response.context['form'].errors)
+                for errors in response.context['form'].errors.values():
+                    for error in errors:
+                        self.assertContains(response, escape(error))
+                self.assertEqual(User.objects.count(), 1)
+                self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_signup_logout_and_login_with_csrf(self):
+        from django.contrib.auth.models import User
+        from django.test import Client
+        from .models import Favorite
+
+        self.client = Client(enforce_csrf_checks=True)
+        self.client.get(reverse('signup'))
+        response = self.client.post(reverse('signup'), {
+            **self.signup_data(),
+            'csrfmiddlewaretoken': self.client.cookies['csrftoken'].value,
+        })
+        self.assertRedirects(response, reverse('recipe_list'))
+        user = User.objects.get(username='new-cook')
+        self.assertEqual(user.email, '')
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+        self.assertNotEqual(user.password, self.password)
+        self.assertTrue(user.check_password(self.password))
+        self.assertEqual(self.client.session['_auth_user_id'], str(user.pk))
+        self.assertRedirects(
+            self.client.get(reverse('admin:index')),
+            reverse('admin:login') + '?next=' + reverse('admin:index'),
+        )
+        for route in ['profile', 'my_recipes', 'favorite_recipes', 'recipe_create', 'password_change']:
+            self.assertEqual(self.client.get(reverse(route)).status_code, 200)
+        category = Category.objects.create(name='Dinner')
+        recipe = Recipe.objects.create(name='Soup', category=category, cooking_time=20, owner=user)
+        response = self.client.post(reverse('toggle_favorite', args=[recipe.pk]), {
+            'csrfmiddlewaretoken': self.client.cookies['csrftoken'].value,
+        })
+        self.assertRedirects(response, reverse('recipe_list'))
+        self.assertTrue(Favorite.objects.filter(user=user, recipe=recipe).exists())
+        self.assertContains(self.client.get(reverse('my_recipes')), 'Soup')
+        self.assertEqual(self.client.get(reverse('recipe_update', args=[recipe.pk])).status_code, 200)
+        response = self.client.post(reverse('logout'), {
+            'csrfmiddlewaretoken': self.client.cookies['csrftoken'].value,
+        })
+        self.assertRedirects(response, reverse('recipe_list'))
+        self.assertNotIn('_auth_user_id', self.client.session)
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 302)
+        self.client.get(reverse('login'))
+        response = self.client.post(reverse('login'), {
+            'username': user.username, 'password': 'wrong-password',
+            'csrfmiddlewaretoken': self.client.cookies['csrftoken'].value,
+        })
+        self.assertContains(response, 'Please enter a correct username and password.')
+        self.assertNotIn('_auth_user_id', self.client.session)
+        response = self.client.post(reverse('login'), {
+            'username': user.username, 'password': self.password,
+            'csrfmiddlewaretoken': self.client.cookies['csrftoken'].value,
+        })
+        self.assertRedirects(response, reverse('recipe_list'))
+        self.assertEqual(self.client.session['_auth_user_id'], str(user.pk))
+
+
+class AdminAuthenticationTests(TestCase):
+    def test_superuser_can_log_in_on_site_and_admin(self):
+        from django.contrib.auth.models import User
+        from secrets import token_urlsafe
+
+        password = token_urlsafe(32)
+        user = User.objects.create_superuser(username='admin-test', password=password)
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        response = self.client.post(reverse('login'), {
+            'username': user.username, 'password': password,
+        })
+        self.assertRedirects(response, reverse('recipe_list'))
+        self.assertEqual(self.client.get(reverse('admin:index')).status_code, 200)
+        self.client.logout()
+        response = self.client.post(reverse('admin:login'), {
+            'username': user.username, 'password': password,
+            'next': reverse('admin:index'),
+        })
+        self.assertRedirects(response, reverse('admin:index'))
+        self.assertEqual(self.client.session['_auth_user_id'], str(user.pk))
+
+    def test_normal_user_cannot_log_in_at_admin(self):
+        from django.contrib.auth.models import User
+        from secrets import token_urlsafe
+
+        password = token_urlsafe(32)
+        user = User.objects.create_user(username='normal-test', password=password)
+        response = self.client.post(reverse('admin:login'), {
+            'username': user.username, 'password': password,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].errors)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+
 class RecipeSearchTests(TestCase):
     @classmethod
     def setUpTestData(cls):
