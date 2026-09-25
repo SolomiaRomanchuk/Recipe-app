@@ -1,0 +1,105 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Difficulty | Recipe Book{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <span class="section-label">CHOOSE YOUR STYLE</span>
+
+    <h1>Choose the difficulty of recipe</h1>
+
+    <p>
+        Select the difficulty level and find recipes that match your cooking skills.
+    </p>
+
+</section>
+
+
+<section class="section">
+
+    <div class="difficulty-grid">
+
+        <a
+            href="{% url 'difficulty_recipes' 'easy' %}"
+            class="difficulty-card"
+        >
+
+            <div class="difficulty-icon">
+                🌿
+            </div>
+
+            <h2>Easy</h2>
+
+            <p>
+                Simple recipes for everyday cooking.
+            </p>
+
+            <span class="difficulty-arrow">
+                Explore Easy Recipes →
+            </span>
+
+        </a>
+
+
+        <a
+            href="{% url 'difficulty_recipes' 'medium' %}"
+            class="difficulty-card"
+        >
+
+            <div class="difficulty-icon">
+                💪
+            </div>
+
+            <h2>Medium</h2>
+
+            <p>
+                A little more time and preparation.
+            </p>
+
+            <span class="difficulty-arrow">
+                Explore Medium Recipes →
+            </span>
+
+        </a>
+
+
+        <a
+            href="{% url 'difficulty_recipes' 'hard' %}"
+            class="difficulty-card"
+        >
+
+            <div class="difficulty-icon">
+                👩‍🍳
+            </div>
+
+            <h2>Hard</h2>
+
+            <p>
+                More challenging recipes for confident cooks.
+            </p>
+
+            <span class="difficulty-arrow">
+                Explore Hard Recipes →
+            </span>
+
+        </a>
+
+    </div>
+
+
+    <div class="detail-footer">
+
+        <a
+            href="{% url 'recipe_list' %}"
+            class="secondary-button"
+        >
+            ← Back to Recipes
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

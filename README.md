@@ -1,58 +1,67 @@
-# Recipe App
+# Recipe Book
 
-Django-застосунок для зберігання та організації рецептів.
+Recipe Book is a Django web application for discovering, creating, and managing recipes.
+Users can browse recipes, organize them by categories and difficulty, save favorites, filter recipes, and discover random meal ideas.
 
-## Моделі
+## Features
 
-- Category — категорія рецепта
-- Recipe — рецепт
-- Ingredient — інгредієнт
+- User registration and authentication
+- Create, edit, and delete recipes
+- Recipe categories
+- Ingredients
+- Recipe difficulty levels
+- Quick Recipes
+- Recipe filtering
+- Recipe search
+- Favorites
+- My Recipes
+- User profile with avatar
+- Change password
+- Surprise Me random recipe feature
+- Responsive design
+- Recipe images
 
-Recipe має ForeignKey на Category
-та ManyToMany зв'язок з Ingredient.
+## Technologies
 
-## Налаштування бази даних і запуск
+- Python
+- Django
+- HTML
+- CSS
+- JavaScript
+- SQLite for local development
+- WhiteNoise for static files
+- Gunicorn
+- django-environ
 
-1. **Створити та активувати віртуальне середовище:**
+## How to Run Locally
 
 ```bash
+git clone <your-repository-url>
+cd recipe-book
+
 python3 -m venv venv
 source venv/bin/activate
-```
 
-2. **Встановити залежності:**
+pip install -r requirements.txt
 
-```bash
-pip install django
-```
+cp .env.example .env
 
-3. **Застосувати міграції:**
+## Fill .env with your local values:
 
-```bash
+SECRET_KEY=your-secret-key
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+Then run:
+
 python3 manage.py migrate
-```
-
-4. **Створити суперкористувача для адмін-панелі:**
-
-```bash
-python3 manage.py createsuperuser
-```
-
-5. **Запустити локальний сервер:**
-
-```bash
 python3 manage.py runserver
+
+## Open the application in your browser.
 ```
 
-Застосунок доступний за адресою `http://127.0.0.1:8000/`, а адмін-панель — `http://127.0.0.1:8000/admin/`.
+## Live Demo
 
-## Скріншоти адмінки
+Live demo will be added after deployment.
 
-### Категорія рецептів
-![Категорія рецептів](screenshot.png)
-
-### Інгредієнти
-![Інгредієнти](screenshot_2.png)
-
-### Повний список рецептів
-![Повний список рецептів](screenshot_3.png)
+## Screenshot
+![Recipe Book Screenshot](screenshot.png)

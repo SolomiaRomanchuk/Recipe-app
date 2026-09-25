@@ -1,0 +1,30 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Add Ingredient | Recipe Book{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <span class="section-label">FRESH & SIMPLE</span>
+    <h1>Add Ingredient</h1>
+    <p>Add a new ingredient to the list.</p>
+</section>
+
+<div class="recipe-form-container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="form-actions">
+            <button type="submit" class="primary-button">
+                Save Ingredient
+            </button>
+            <a href="{% url 'ingredients_list' %}" class="secondary-button">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+

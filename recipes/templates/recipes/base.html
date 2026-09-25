@@ -1,126 +1,290 @@
 {% load static %}
+
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<title>{% block title %}Recipe Book{% endblock %}</title>
+    <title>
+        {% block title %}Recipe Book{% endblock %}
+    </title>
 
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
 
 </head>
 
 <body>
 
 <header class="navbar">
+
     <div class="container navbar-content">
 
-
-    <a href="{% url 'recipe_list' %}" class="logo">
-        🥨 Recipe Book
-    </a>
-
-
-
-    <nav class="nav-links">
-
-    <a href="{% url 'recipe_list' %}">
-        Recipes
-    </a>
-
-    <a href="{% url 'category_list' %}">
-        Categories
-    </a>
-
-    <a href="{% url 'ingredients_list' %}">
-        Ingredients
-    </a>
-
-    <a href="{% url 'quick_recipe_list' %}">
-        Quick Recipes
-    </a>
-
-    {% if user.is_authenticated %}
-
-        <a href="{% url 'my_recipes' %}">
-            My Recipes
-        </a>
-
-        <a href="{% url 'password_change' %}">
-             Change Password
-        </a>
-
-        <span>
-              Hello, {{ user.username }} · {{ user.recipes.count }} recipes
-        </span>
-
-        <form
-            method="post"
-            action="{% url 'logout' %}"
+        <!-- Logo -->
+        <a
+            href="{% url 'recipe_list' %}"
+            class="logo"
         >
-            {% csrf_token %}
+            🥨 Recipe Book
+        </a>
 
-            <button type="submit" class="nav-button">
-                Logout
-            </button>
+        <div class="navbar-actions">
+        <button
+            type="button"
+            class="menu-button search-toggle"
+            id="searchButton"
+            aria-label="Search recipes"
+            aria-controls="recipeSearch"
+            aria-expanded="{% if search_query %}true{% else %}false{% endif %}"
+        >
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+                <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                <path d="m16 16 5 5"></path>
+            </svg>
+        </button>
+
+        <!-- Hamburger button -->
+        <button
+            type="button"
+            class="menu-button"
+            id="menuButton"
+            aria-label="Open menu"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        </div>
+
+    </div>
+
+    <div class="recipe-search" id="recipeSearch"{% if not search_query %} hidden{% endif %}>
+        <form method="get" action="{% url 'recipe_list' %}" role="search" class="recipe-search-form">
+            <input type="search" name="search" id="recipeSearchInput" aria-label="Search recipes by name" placeholder="Search recipes..." value="{{ search_query|default:'' }}">
+            <button type="submit" class="primary-button">Search</button>
         </form>
-
-    {% else %}
-
-        <a href="{% url 'login' %}">
-            Login
-        </a>
-
-        <a href="{% url 'signup' %}">
-            Sign Up
-        </a>
-
-    {% endif %}
-
-    </nav>
-
-</div>
-
+    </div>
 
 </header>
 
+
+<!-- Dark background behind the menu -->
+<div
+    class="menu-overlay"
+    id="menuOverlay"
+></div>
+
+
+<!-- Side menu -->
+<aside
+    class="side-menu"
+    id="sideMenu"
+>
+
+    <div class="side-menu-header">
+
+        <span class="side-menu-title">
+            Menu
+        </span>
+
+        <button
+            type="button"
+            class="menu-close"
+            id="menuClose"
+            aria-label="Close menu"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <nav class="side-menu-links">
+
+        <!-- Main pages -->
+
+        <a href="{% url 'recipe_list' %}">
+            Recipes
+        </a>
+
+        <a href="{% url 'category_list' %}">
+            Categories
+        </a>
+
+        <a href="{% url 'ingredients_list' %}">
+            Ingredients
+        </a>
+
+        <a href="{% url 'recipe_filter' %}">
+            Filters
+        </a>
+
+        <a href="{% url 'surprise_recipe' %}">
+            Surprise Me
+        </a>
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'favorite_recipes' %}">
+                Favorites
+            </a>
+
+            <a href="{% url 'profile' %}" class="menu-user-info menu-profile">
+                {% include 'recipes/profile_icon.html' %}
+                <div class="menu-profile-text">
+                    <strong>Profile</strong>
+                    {% with recipe_count=user.recipes.count %}
+                    <span class="menu-profile-summary" title="{{ user.username }} • {{ recipe_count }} recipe{{ recipe_count|pluralize }}">{{ user.username }} • {{ recipe_count }} recipe{{ recipe_count|pluralize }}</span>
+                    {% endwith %}
+                </div>
+            </a>
+
+        {% else %}
+
+            <!-- Guest pages -->
+
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+
+            <a href="{% url 'signup' %}">
+                Sign Up
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</aside>
+
+
 <main class="main-content">
+
     {% if messages %}
 
-    {% for message in messages %}
+        {% for message in messages %}
 
-        <div class="container">
+            <div class="container">
 
-            <div class="message message--{{ message.tags }}">
-                {{ message }}
+                <div class="message message--{{ message.tags }}">
+                    {{ message }}
+                </div>
+
             </div>
 
-        </div>
+        {% endfor %}
 
-    {% endfor %}
+    {% endif %}
 
-{% endif %}
+
     <div class="container">
 
+        {% block content %}
+        {% endblock %}
 
-    {% block content %}
-    {% endblock %}
+    </div>
 
-</div>
 </main>
 
 
 <footer class="footer">
+
     <div class="container">
-        <p>© 2026 Recipe Book</p>
-        <p>Simple recipes. Delicious moments.</p>
+
+        <p>
+            © 2026 Recipe Book
+        </p>
+
+        <p>
+            Simple recipes. Delicious moments.
+        </p>
+
     </div>
+
 </footer>
 
-</body>
-</html>
 
+<!-- Hamburger menu JavaScript -->
+
+<script>
+    const searchButton = document.getElementById('searchButton');
+    const recipeSearch = document.getElementById('recipeSearch');
+    const recipeSearchInput = document.getElementById('recipeSearchInput');
+
+    function closeSearch() {
+        recipeSearch.hidden = true;
+        searchButton.setAttribute('aria-expanded', 'false');
+    }
+
+    searchButton.addEventListener('click', () => {
+        const opening = recipeSearch.hidden;
+        recipeSearch.hidden = !opening;
+        searchButton.setAttribute('aria-expanded', String(opening));
+        if (opening) recipeSearchInput.focus();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !recipeSearch.hidden) {
+            closeSearch();
+            searchButton.focus();
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!recipeSearch.hidden && !recipeSearch.contains(event.target) && !searchButton.contains(event.target)) {
+            closeSearch();
+        }
+    });
+</script>
+
+<script>
+
+    const menuButton = document.getElementById('menuButton');
+    const menuClose = document.getElementById('menuClose');
+    const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+
+
+    function openMenu() {
+
+        sideMenu.classList.add('open');
+
+        menuOverlay.classList.add('open');
+
+        document.body.classList.add('menu-open');
+
+    }
+
+
+    function closeMenu() {
+
+        sideMenu.classList.remove('open');
+
+        menuOverlay.classList.remove('open');
+
+        document.body.classList.remove('menu-open');
+
+    }
+
+
+    menuButton.addEventListener('click', openMenu);
+
+    menuClose.addEventListener('click', closeMenu);
+
+    menuOverlay.addEventListener('click', closeMenu);
+
+</script>
+
+
+</body>
+
+</html>

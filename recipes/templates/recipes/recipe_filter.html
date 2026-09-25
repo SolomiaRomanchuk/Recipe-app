@@ -1,0 +1,54 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Filters | Recipe Book{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <span class="section-label">FILTER RECIPES</span>
+    <h1>Find Your Perfect Recipe</h1>
+    <p>Choose your preferences and discover recipes that match what you're looking for.</p>
+</section>
+
+<form method="get" action="{% url 'recipe_filter' %}" class="recipe-form-container recipe-filter-form">
+    <div class="recipe-filter-controls">
+        {% for field in filter_form %}
+        <div class="recipe-filter-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+            <div class="recipe-filter-errors" id="{{ field.auto_id }}_error">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="primary-button">Find Recipes</button>
+        <a href="{% url 'recipe_filter' %}" class="recipe-filter-reset">Reset Filters</a>
+    </div>
+</form>
+
+<section class="section">
+    {% if show_results %}
+    <div class="section-heading">
+        <div>
+            <h2>Recipes That Match Your Preferences</h2>
+            <p class="muted-text">Based on your selected category, difficulty, and cooking time.</p>
+        </div>
+    </div>
+
+    {% if recipes %}
+        {% include 'recipes/recipe_grid.html' %}
+    {% else %}
+    <div class="empty-state">
+        <h3>No matching recipes</h3>
+        <p>We couldn't find recipes that match your selected filters.<br>Try changing one or more options.</p>
+        <a href="{% url 'recipe_filter' %}" class="secondary-button">Reset Filters</a>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="detail-footer">
+        <a href="{% url 'recipe_list' %}" class="secondary-button">← Back to Recipes</a>
+    </div>
+</section>
+{% endblock %}

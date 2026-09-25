@@ -1,19 +1,17 @@
 {% extends 'recipes/base.html' %}
 
-{% block title %}Login | Recipe Book{% endblock %}
+{% block title %}Add Category | Recipe Book{% endblock %}
 
 {% block content %}
 
 <section class="page-header">
 
-    <span class="section-label">
-        RECIPE BOOK
-    </span>
+    <span class="section-label">EXPLORE</span>
 
-    <h1>Login</h1>
+    <h1>Add Category</h1>
 
     <p>
-        Log in to manage your recipes.
+        Create a new category for your recipes.
     </p>
 
 </section>
@@ -26,14 +24,14 @@
 
         {{ form.as_p }}
 
-        <div class="form-actions" style="justify-content: center;">
+        <div class="form-actions">
 
             <button type="submit" class="primary-button">
-                Login
+                Save Category
             </button>
 
             <a
-                href="{% url 'recipe_list' %}"
+                href="{% url 'category_list' %}"
                 class="secondary-button"
             >
                 Cancel

@@ -1,0 +1,113 @@
+    <div class="recipe-grid">
+
+        {% for recipe in recipes %}
+
+        <article class="recipe-card">
+
+            <div class="recipe-image">
+
+                {% if recipe.image %}
+
+                    <img
+                        src="{{ recipe.image.url }}"
+                        alt="{{ recipe.name }}"
+                    >
+
+                {% else %}
+
+                    <div class="image-placeholder">
+                        🍽️
+                    </div>
+
+                {% endif %}
+
+
+                {% if user.is_authenticated %}
+
+                    <a
+                        href="{% url 'toggle_favorite' recipe.pk %}"
+                        class="favorite-button {% if recipe.pk in favorite_recipe_ids %}is-favorite{% endif %}"
+                        title="{% if recipe.pk in favorite_recipe_ids %}Remove from favorites{% else %}Add to favorites{% endif %}"
+                        onclick="sessionStorage.setItem('favoriteScrollPosition', window.scrollY)"
+                    >
+
+                        {% if recipe.pk in favorite_recipe_ids %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="recipe-card-content">
+
+                <div class="recipe-meta">
+
+                    <span>
+                        ⏱ {{ recipe.cooking_time }} min
+                    </span>
+
+                    <span class="difficulty {{ recipe.difficulty }}">
+                        {{ recipe.difficulty|title }}
+                    </span>
+
+                </div>
+
+
+                <h3>
+                    {{ recipe.name }}
+                </h3>
+
+
+                {% if recipe.category %}
+
+                    <p class="category-name">
+                        {{ recipe.category.name }}
+                    </p>
+
+                {% endif %}
+
+
+                <a
+                    href="{% url 'recipe_detail' recipe.id %}{% if selected_category %}?from=category&category={{ selected_category.id }}{% elif page_title == 'Quick Recipes' %}?from=quick{% endif %}"
+                    class="secondary-button"
+                >
+                    View Recipe →
+                </a>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+<script>
+
+    window.addEventListener('load', function () {
+
+        const scrollPosition =
+            sessionStorage.getItem('favoriteScrollPosition');
+
+        if (scrollPosition !== null) {
+
+            window.scrollTo(
+                0,
+                parseInt(scrollPosition, 10)
+            );
+
+            sessionStorage.removeItem(
+                'favoriteScrollPosition'
+            );
+
+        }
+
+    });
+
+</script>

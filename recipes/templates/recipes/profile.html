@@ -1,0 +1,76 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Profile | Recipe Book{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <section class="page-header profile-header">
+        {% include 'recipes/profile_icon.html' %}
+        <div class="avatar-actions">
+            <form method="post" enctype="multipart/form-data" action="{% url 'profile' %}" id="avatarUploadForm">
+                {% csrf_token %}
+                <label class="avatar-change" for="{{ avatar_form.avatar.id_for_label }}">Change Photo</label>
+                {{ avatar_form.avatar }}
+                <noscript><button type="submit" class="secondary-button">Upload Photo</button></noscript>
+            </form>
+            {% if user.profile.avatar %}
+            <form method="post" action="{% url 'profile' %}">
+                {% csrf_token %}
+                <button type="submit" name="action" value="remove_avatar" class="avatar-remove">Remove Photo</button>
+            </form>
+            {% endif %}
+        </div>
+        {% if avatar_form.avatar.errors %}
+        <div class="avatar-errors" id="id_avatar_error" role="alert">{{ avatar_form.avatar.errors }}</div>
+        {% endif %}
+        <h1>Hello, {{ user.username }}!</h1>
+        {% with recipe_count=user.recipes.count %}
+        <p>{{ recipe_count }} recipe{{ recipe_count|pluralize }} created</p>
+        {% endwith %}
+    </section>
+
+    <section class="profile-section" aria-labelledby="profile-recipes-heading">
+        <h2 class="section-label" id="profile-recipes-heading">MY RECIPE BOOK</h2>
+        <div class="profile-grid">
+            <a class="profile-option" href="{% url 'my_recipes' %}">
+                <h3>My Recipes</h3>
+                <p>View and manage the recipes you've created.</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="profile-section" aria-labelledby="profile-shortcuts-heading">
+        <h2 class="section-label" id="profile-shortcuts-heading">RECIPE SHORTCUTS</h2>
+        <div class="profile-grid">
+            <a class="profile-option" href="{% url 'quick_recipe_list' %}">
+                <h3>Quick Recipes</h3>
+                <p>Discover recipes that are quick and easy to prepare.</p>
+            </a>
+            <a class="profile-option" href="{% url 'difficulty_list' %}">
+                <h3>Difficulty</h3>
+                <p>Browse recipes by difficulty level.</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="profile-section" aria-labelledby="profile-account-heading">
+        <h2 class="section-label" id="profile-account-heading">ACCOUNT</h2>
+        <div class="profile-grid">
+            <a class="profile-option" href="{% url 'password_change' %}">
+                <h3>Change Password</h3>
+                <p>Update your account password.</p>
+            </a>
+        </div>
+        <form method="post" action="{% url 'logout' %}" class="profile-logout">
+            {% csrf_token %}
+            <button type="submit" class="secondary-button profile-logout-button">Logout</button>
+        </form>
+    </section>
+</div>
+<script>
+    const avatarUploadForm = document.getElementById('avatarUploadForm');
+    avatarUploadForm.querySelector('input[type="file"]').addEventListener('change', function () {
+        if (this.files.length) avatarUploadForm.requestSubmit();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+<div class="profile-avatar">
+<svg class="profile-icon" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+    <circle class="profile-icon-background" cx="24" cy="24" r="24" />
+    <circle class="profile-icon-person" cx="24" cy="17" r="7" />
+    <path class="profile-icon-person" d="M11 38a13 13 0 0 1 26 0Z" />
+</svg>
+{% with avatar_url=user.profile.avatar_url %}
+{% if avatar_url %}
+<img src="{{ avatar_url }}" class="profile-avatar-photo" alt="" width="48" height="48" onerror="this.hidden = true;">
+{% endif %}
+{% endwith %}
+</div>

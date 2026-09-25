@@ -1,0 +1,31 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Delete Ingredient | Recipe Book{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <span class="section-label">FRESH & SIMPLE</span>
+    <h1>Delete Ingredient</h1>
+    <p>
+        Are you sure you want to delete
+        "{{ object.name }}"? This cannot be undone.
+    </p>
+</section>
+
+<div class="recipe-form-container">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-actions">
+            <button type="submit" class="primary-button">
+                Yes, Delete
+            </button>
+            <a href="{% url 'ingredients_list' %}" class="secondary-button">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

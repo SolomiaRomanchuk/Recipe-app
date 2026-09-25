@@ -6,56 +6,86 @@
 
 <section class="page-header">
 
+    <span class="section-label">FRESH & SIMPLE</span>
 
-<span class="section-label">FRESH & SIMPLE</span>
+    <h1>Ingredients</h1>
 
-<h1>Ingredients</h1>
-
-<p>
-    Ingredients you'll need for the recipes.
-</p>
+    <p>
+        Ingredients you'll need for the recipes.
+    </p>
 
 </section>
 
+{% if user.is_authenticated %}
+    <div class="ingredient-actions">
+        <a href="{% url 'ingredient_create' %}" class="primary-button">
+            Add Ingredient
+        </a>
+    </div>
+{% endif %}
+
 <section class="section">
 
+    {% if ingredients %}
 
-{% if ingredients %}
+    <div class="ingredient-grid">
 
-<div class="ingredient-grid">
+        {% for ingredient in ingredients %}
 
-    {% for ingredient in ingredients %}
+        <div class="ingredient-card">
 
-    <div class="ingredient-card">
+            {% if user.is_staff %}
+            <a
+                href="{% url 'ingredient_delete' ingredient.pk %}"
+                class="ingredient-delete"
+                title="Delete {{ ingredient.name }}"
+            >
+                ×
+            </a>
+            {% endif %}
 
-        <div class="ingredient-icon">
-            {{ ingredient.emoji }}
+            <div class="ingredient-icon">
+                {{ ingredient.emoji }}
+            </div>
+
+            <span>
+                {{ ingredient.name }}
+            </span>
+
         </div>
 
-        <span>{{ ingredient.name }}</span>
+        {% endfor %}
 
     </div>
 
-    {% endfor %}
+    {% else %}
 
-</div>
+    <div class="empty-state">
 
-{% else %}
+        <div class="empty-icon">🥕</div>
 
-<div class="empty-state">
+        <h3>No ingredients yet</h3>
 
-    <div class="empty-icon">🥕</div>
+        <p>
+            Ingredients will appear here when you add them.
+        </p>
 
-    <h3>No ingredients yet</h3>
+    </div>
 
-    <p>
-        Ingredients will appear here when you add them.
-    </p>
+    {% endif %}
 
-</div>
+    <div class="detail-footer">
 
-{% endif %}
+        <a
+            href="{% url 'recipe_list' %}"
+            class="secondary-button"
+        >
+            ← Back to Recipes
+        </a>
+
+    </div>
 
 </section>
 
 {% endblock %}
+

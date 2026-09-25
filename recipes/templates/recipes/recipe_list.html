@@ -4,8 +4,12 @@
 
 {% block content %}
 
+{% if show_recipe_hero %}
+
 <section class="hero">
+
     <div>
+
         <span class="hero-label">WELCOME TO</span>
 
         <h1>Recipe Book</h1>
@@ -18,123 +22,153 @@
         <a href="#recipes" class="primary-button">
             Explore Recipes
         </a>
+
     </div>
 
     <div class="hero-icon">
         🥨
     </div>
+
 </section>
+
+{% endif %}
+
 
 <section id="recipes" class="section">
 
     <div class="section-heading">
-        <div>
-            <span class="section-label">OUR COLLECTION</span>
-            <h2>{{ page_title }}</h2>
-       </div>
 
-        <a href="{% url 'recipe_create' %}" class="primary-button">
+        <div>
+
+            <span class="section-label">OUR COLLECTION</span>
+
+            <h2>{{ page_title }}</h2>
+
+        </div>
+
+        {% if not search_query %}
+        <a
+            href="{% url 'recipe_create' %}"
+            class="primary-button"
+        >
             Add Recipe
         </a>
+        {% endif %}
+
     </div>
+
 
     {% if recipes %}
 
-    <div class="recipe-grid">
+    {% include "recipes/recipe_grid.html" %}
 
-        {% for recipe in recipes %}
-
-        <article class="recipe-card">
-
-            <div class="recipe-image">
-                {% if recipe.image %}
-                    <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}">
-                {% else %}
-                    <div class="image-placeholder">
-                        🍽️
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="recipe-card-content">
-
-                <div class="recipe-meta">
-                    <span>⏱ {{ recipe.cooking_time }} min</span>
-                    <span class="difficulty {{ recipe.difficulty }}">
-                        {{ recipe.difficulty|title }}
-                    </span>
-                </div>
-
-                <h3>{{ recipe.name }}</h3>
-
-                {% if recipe.category %}
-                    <p class="category-name">
-                        {{ recipe.category.name }}
-                    </p>
-                {% endif %}
-
-                <a
-                        href="{% url 'recipe_detail' recipe.id %}{% if selected_category %}?from=category&category={{ selected_category.id }}{% elif page_title == 'Quick Recipes' %}?from=quick{% endif %}"
-                        class="secondary-button"
-                >
-                        View Recipe →
-                </a>
-
-            </div>
-
-        </article>
-
-        {% endfor %}
-
-    </div>
 
     {% if is_paginated %}
+
     <nav class="pagination">
 
         {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}">
+
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&amp;search={{ search_query|urlencode }}{% if selected_category %}&amp;category={{ selected_category.pk }}{% endif %}{% endif %}">
                 ← Previous
             </a>
+
         {% endif %}
 
+
         <span>
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            Page {{ page_obj.number }}
+            of
+            {{ page_obj.paginator.num_pages }}
         </span>
 
+
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">
+
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&amp;search={{ search_query|urlencode }}{% if selected_category %}&amp;category={{ selected_category.pk }}{% endif %}{% endif %}">
                 Next →
             </a>
+
         {% endif %}
 
     </nav>
+
     {% endif %}
+
 
     {% if selected_category %}
 
     <div class="detail-footer">
 
         <a
-          href="{% url 'category_list' %}"
-          class="secondary-button"
+            href="{% url 'category_list' %}"
+            class="secondary-button"
         >
-          ← Back to Categories
+            ← Back to Categories
         </a>
 
-   </div>
+    </div>
+
+    {% endif %}
+
+    {% if selected_difficulty %}
+
+<div class="detail-footer">
+
+    <a
+        href="{% url 'difficulty_list' %}"
+        class="secondary-button"
+    >
+        ← Back to Difficulty
+    </a>
+
+</div>
 
 {% endif %}
+
+
+    {% if show_back_to_recipes %}
+
+    <div class="detail-footer">
+
+        <a
+            href="{% url 'recipe_list' %}"
+            class="secondary-button"
+        >
+            ← Back to Recipes
+        </a>
+
+    </div>
+
+    {% endif %}
+
 
     {% else %}
 
     <div class="empty-state">
-        <div class="empty-icon">🍳</div>
+
+        <div class="empty-icon">
+            🍳
+        </div>
+
+        {% if search_query %}
+        <h3>No recipes found</h3>
+        <p>Try searching for another recipe name.</p>
+        {% else %}
         <h3>No recipes yet</h3>
-        <p>Add recipes from this category, and they’ll appear here.</p>
+
+        <p>
+            Add recipes from this category, and they’ll appear here.
+        </p>
+        {% endif %}
+
     </div>
 
     {% endif %}
 
 </section>
+
+
+
 
 {% endblock %}
