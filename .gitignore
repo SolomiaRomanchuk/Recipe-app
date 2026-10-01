@@ -8,3 +8,5 @@ db.sqlite3
 
 .env
 staticfiles/
+db_backup.sqlite3
+data.json
