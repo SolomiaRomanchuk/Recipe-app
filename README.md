@@ -59,9 +59,9 @@ python3 manage.py runserver
 # Open the application in your browser.
 ```
 
-## Live Demo
+## Visit site
 
-Live demo will be added after deployment.
+https://recipe-app-cak1.onrender.com/recipes/
 
 ## Screenshot
 ![Recipe Book Screenshot](screenshot.png)
