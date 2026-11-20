@@ -11,3 +11,6 @@ staticfiles/
 db_backup.sqlite3
 data.json
 recipes_data.json
+backup.json
+image_paths_backup.json
+fix_cloudinary_images.py
